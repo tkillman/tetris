@@ -10,6 +10,7 @@ var downClickCnt = 0; //아래쪽 클릭 수
 var tetrisRowSize = 15; // row 수
 var tetrisColSize = 10; // col 수
 var gameOver = false; //게임오버
+var game; //setinterval
 
 var blockArr = [
   ['white', false, []],
@@ -205,7 +206,11 @@ function 새로운도형데이터설정(newBlock) {
       let ColCenterValue = j + 3 - leftClickCnt + rightClickCnt;
       
       if (ColCenterValue < 0) {
-        fixValue = 1;
+        if (randomValue === 5) { //막대기
+          fixValue = 3; 
+        }else {
+          fixValue = 1;
+        }
         fixNeed = true;
       }
 
@@ -220,7 +225,7 @@ function 새로운도형데이터설정(newBlock) {
   })
 
   if (fixNeed) {
-    leftClickCnt--;
+    leftClickCnt = leftClickCnt - fixValue;
   }
 }
 
@@ -318,9 +323,9 @@ function 블럭생성기() {
 
   stopDown = false;
 
-  randomValue = Math.floor(Math.random() * (blockArr.length - 1));
+  randomValue = Math.floor(Math.random() * (blockArr.length));
   //TEST
-  //randomValue = 3;
+  //randomValue = 5;
 
   var 블럭 = randomValue === 0 ? blockArr[1][2] : blockArr[randomValue][2];
 
@@ -428,7 +433,27 @@ function 윗줄아래로내림(rowLine){
 
 칸만들기();
 블럭생성기();
+var btnGameStartEnd = document.querySelector("#gameStartEnd");
+btnGameStartEnd.addEventListener('click', onClickGameStart);
 
-var game = setInterval(() => {
-  블록내리기();
-}, 500);
+function onClickGameStart(){
+
+  game = setInterval(() => {
+    블록내리기();
+  }, 500);
+
+  btnGameStartEnd.removeEventListener('click', onClickGameStart);
+  btnGameStartEnd.innerHTML = 'Game Stop';
+  btnGameStartEnd.addEventListener("click", onClickGameStop);
+}
+
+function onClickGameStop(){
+  console.log('onClickGameStop');
+  clearInterval(game);
+
+  btnGameStartEnd.removeEventListener('click', onClickGameStop);
+  btnGameStartEnd.innerHTML = 'Game Start';
+  btnGameStartEnd.addEventListener("click", onClickGameStart);
+}
+
+
