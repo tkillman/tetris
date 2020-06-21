@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>테트리스33 김동규</title>
     <style>
+        .content{
+            display: inline-block;
+        }
         #tetris td {
             border: 1px solid black;
             width: 30px;
@@ -33,10 +36,34 @@
         td.violet{
             background-color: violet;
         }
+        #btnUp{
+            width: 50px;
+            margin-left: 84px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+        .btnMove{
+            height: 40px;
+            margin-left: 20px;
+            box-sizing: border-box;
+        }
 </style>
 </head>
 <body>
-    <table id="tetris"></table>
+    <div class="content">
+        <table id="tetris"></table>
+        <div>
+            <button id="gameStartEnd">Game Start</button>
+        </div>
+        <div class="divBtn">
+            <button id="btnUp" class="btnMove" onclick="도형모양바꾸기()">Up</button>
+            <div>
+            <button id="btnLeft" class="btnMove" onclick="블럭왼쪽()">Left</button>
+            <button id="btnDown" class="btnMove" onclick="블록내리기()">Down</button>
+            <button id="btnRight" class="btnMove" onclick="블럭오른쪽()">Right</button>
+            </div>
+        </div>
+    </div>
 </body>
 <script src="./테트리스3.js"></script>
 </html>
