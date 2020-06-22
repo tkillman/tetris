@@ -95,28 +95,11 @@ function 칸만들기() {
   }
 }
 
-window.addEventListener('keydown', e => {
-
-  switch (e.code) {
-    case 'Space':
-      break;
-    case 'ArrowRight':
-      break;
-    case 'ArrowLeft':
-      break;
-    case 'ArrowDown':
-      break;
-    case 'ArrowUp':
-      break;
-    default:
-      break;
-  }
-})
-
 window.addEventListener('keyup', e => {
 
   switch (e.code) {
     case 'Space':
+      while (블록내리기()) {}
       break;
     case 'ArrowRight':
       블럭오른쪽();
@@ -174,7 +157,6 @@ function 모양바꾸기예상() {
       }
 
       if (tetrisData[rowCenterValue][ColCenterValue + fixValue] >= 10 && changeResult.newBlock[i][j] > 0 && changeResult.newBlock[i][j] < 10) {       
-        console.log('바꾸려는 범위에 10 데이터 존재', tetrisData[rowCenterValue][ColCenterValue + fixValue], rowCenterValue, ColCenterValue + fixValue); 
         changeResult.result = false;
         break;
       } else {
@@ -325,7 +307,7 @@ function 블럭생성기() {
 
   randomValue = Math.floor(Math.random() * (blockArr.length));
   //TEST
-  //randomValue = 5;
+  //randomValue = 1;
 
   var 블럭 = randomValue === 0 ? blockArr[1][2] : blockArr[randomValue][2];
 
@@ -347,23 +329,20 @@ function 블록내리기() {
   
   downClickCnt++;
 
-  var movePosible = false;
+  var movePossible = false;
 
   for (var i = tetrisData.length - 1; i >= 0; i--) {
     for (var j = 0; j < tetrisData[i].length; j++) {
       if (tetrisData[i][j] > 0 && tetrisData[i][j] < 10){
-        if (!tetrisData[i+1]) {
-          movePosible = true;
-          break;
-        } else if(tetrisData[i+1][j] >= 10){
-          movePosible = true;
+        if (!tetrisData[i+1] || tetrisData[i+1][j] >= 10) {
+          movePossible = true;
           break;
         }
       }
     }
   } 
 
-  if (movePosible) {
+  if (movePossible) {
     for (var i = tetrisData.length - 1; i >= 0; i--) {
       tetrisData[i].forEach((td, j) => {
         if (td > 0 && td < 10) {
@@ -389,24 +368,26 @@ function 블록내리기() {
     if (gameOver) {
       clearInterval(game);
       alert("끝");
+      return false;
     } else {
       블럭생성기();
+      return false;
     }
   }
 
   //TODO 전체 데이터 중 한줄 있는 칸 없애기
   칸없애기();
-
   화면그리기();
+  return true;
 }
 
 function 게임오버체크(){
-  console.log('게임오버체크', tetrisData[0][2], tetrisData[0][3], tetrisData[0][4]);
   gameOver = tetrisData[0][4] >= 10 ? true : false;
 }
 
 function 칸없애기() {
-  
+  let fillLineArray = []; //차 있는 라인 배열
+
   //데이터 확인
   for (let i = tetrisData.length - 1; i >= 0; i--) {
     let fillTdValue = 0;
@@ -417,16 +398,18 @@ function 칸없애기() {
     })
 
     if (fillTdValue === 10) { //모든 칸이 차 있으면
-        윗줄아래로내림(i);
+        fillLineArray.push(i);
     }
   }
-}
-function 윗줄아래로내림(rowLine){
-  for (let i = rowLine; i > 0; i--) {
-    for (let j = 0; j < tetrisColSize; j++) {
-      tetrisData[i][j] = 0; //줄 비움
-      tetrisData[i][j] = tetrisData[i-1][j]; //윗줄 아래로 채움
-      tetrisData[i-1][j] = 0; //윗줄 제거
+
+  //데이터조작
+  if (fillLineArray.length > 0) {
+    fillLineArray.forEach(i => {
+      tetrisData.splice(i,1);
+    })
+
+    for (let i = 0; i < fillLineArray.length; i++) {
+      tetrisData.unshift([0,0,0,0,0,0,0,0,0,0]);
     }
   }
 }
@@ -448,7 +431,6 @@ function onClickGameStart(){
 }
 
 function onClickGameStop(){
-  console.log('onClickGameStop');
   clearInterval(game);
 
   btnGameStartEnd.removeEventListener('click', onClickGameStop);
